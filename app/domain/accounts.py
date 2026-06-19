@@ -322,6 +322,8 @@ class TrueLayerAccount(Account):
             icon = "halifax.svg"
         elif account_type.lower() == "natwest":
             icon = "natwest.svg"
+        elif account_type.lower() == "lloyds":
+            icon = "lloyds.svg"
         else:
             icon = "truelayer.svg"
         self.auth_provider = TrueLayerAuthProvider(
@@ -415,18 +417,20 @@ class TrueLayerAccount(Account):
                 # lets ensure balances are rounded up
                 balance = math.ceil(balance * 100) / 100
 
-            if provider in ["HALIFAX"]:
-                # Halifax doesn't provide separate pending transactions
-                # The 'available' field already accounts for pending charges
-                # Balance owed = credit_limit - available
+            # Halifax and Lloyds are part of the same banking group and share the
+            # same Open Banking platform: neither exposes separate pending
+            # transactions. The 'available' field already accounts for pending
+            # charges, so balance owed = credit_limit - available.
+            if provider in ["HALIFAX", "LLOYDS"]:
                 credit_limit = balance_data.get("credit_limit", 0)
                 available = balance_data.get("available", 0)
                 balance_owed = credit_limit - available
-                
-                log.info(f"Halifax Card - Credit Limit: £{credit_limit:.2f}")
-                log.info(f"Halifax Card - Available Credit: £{available:.2f}")
-                log.info(f"Halifax Card - Balance Owed: £{balance_owed:.2f}")
-                
+
+                provider_label = provider.capitalize()
+                log.info(f"{provider_label} Card - Credit Limit: £{credit_limit:.2f}")
+                log.info(f"{provider_label} Card - Available Credit: £{available:.2f}")
+                log.info(f"{provider_label} Card - Balance Owed: £{balance_owed:.2f}")
+
                 # Ensure balance is rounded up and set
                 balance = math.ceil(balance_owed * 100) / 100
 

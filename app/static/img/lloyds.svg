@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Lloyds">
+  <rect width="512" height="512" rx="96" fill="#006A4D"/>
+  <path d="M150 132c20 0 32 14 32 40v118c0 14 8 22 24 22h70v44H188c-44 0-70-26-70-72V132z" fill="#FFFFFF"/>
+  <circle cx="330" cy="180" r="34" fill="#74C044"/>
+  <path d="M300 296c0-30 22-52 52-52s52 22 52 52-22 52-52 52v-30c14 0 22-10 22-22s-8-22-22-22-22 10-22 22h-30z" fill="#74C044"/>
+</svg>

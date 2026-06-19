@@ -3,6 +3,7 @@ import pytest
 from app.domain.auth_providers import (
     AmericanExpressAuthProvider,
     AuthProviderType,
+    LloydsAuthProvider,
     MonzoAuthProvider,
     provider_mapping,
 )
@@ -31,6 +32,23 @@ def test_amex_provider_initialization(amex_provider):
     assert amex_provider.token_endpoint == "/connect/token"
     assert amex_provider.callback_url == "http://localhost:1337/auth/callback/truelayer"
     assert amex_provider.setting_prefix == "truelayer"
+
+
+def test_lloyds_provider_initialization(lloyds_provider):
+    assert lloyds_provider.name == "Lloyds"
+    assert lloyds_provider.type == AuthProviderType.LLOYDS.value
+    assert lloyds_provider.icon_name == "lloyds.svg"
+    assert lloyds_provider.api_url == "https://api.truelayer.com"
+    assert lloyds_provider.auth_url == "https://auth.truelayer.com"
+    assert lloyds_provider.token_url == "https://auth.truelayer.com"
+    assert lloyds_provider.token_endpoint == "/connect/token"
+    assert lloyds_provider.callback_url == "http://localhost:1337/auth/callback/truelayer"
+    assert lloyds_provider.setting_prefix == "truelayer"
+
+
+def test_get_lloyds_provider_specific_oauth_request_params(lloyds_provider):
+    params = lloyds_provider.get_provider_specific_oauth_request_params()
+    assert params == {"providers": "uk-ob-lloyds", "scope": lloyds_provider.oauth_scopes}
 
 
 def test_get_default_oauth_request_params(setting_repository, monzo_provider):
@@ -118,3 +136,4 @@ def test_get_american_express_provider_specific_oauth_request_params(amex_provid
 def test_provider_mapping():
     assert isinstance(provider_mapping[AuthProviderType.MONZO], MonzoAuthProvider)
     assert isinstance(provider_mapping[AuthProviderType.AMEX], AmericanExpressAuthProvider)
+    assert isinstance(provider_mapping[AuthProviderType.LLOYDS], LloydsAuthProvider)

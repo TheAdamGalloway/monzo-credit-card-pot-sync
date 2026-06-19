@@ -231,6 +231,31 @@ def test_truelayer_account_get_total_balance(requests_mock):
     # Assert that the total balance is calculated correctly
     assert account.get_total_balance() == 140000  # Total in pence (multiplied by 100)
 
+
+def test_truelayer_account_lloyds_uses_credit_limit_minus_available(requests_mock):
+    cards_response = {
+        "results": [
+            {"account_id": "1", "provider": {"display_name": "LLOYDS"}}
+        ]
+    }
+    requests_mock.get("https://api.truelayer.com/data/v1/cards", status_code=200, json=cards_response)
+
+    # Lloyds (like Halifax) exposes no separate pending transactions; balance owed
+    # is derived from credit_limit - available.
+    balance_response = {"results": [{"account_id": "1", "current": 200, "credit_limit": 1000, "available": 700}]}
+    requests_mock.get("https://api.truelayer.com/data/v1/cards/1/balance", status_code=200, json=balance_response)
+
+    account = TrueLayerAccount("Lloyds", "access_token", "refresh_token", time() + 1000)
+
+    # Balance owed = 1000 - 700 = 300 -> 30000 pence
+    assert account.get_total_balance() == 30000
+
+
+def test_truelayer_account_lloyds_icon():
+    account = TrueLayerAccount("Lloyds", "access_token", "refresh_token", time() + 1000)
+    assert account.auth_provider.icon_name == "lloyds.svg"
+
+
 def test_monzo_account_refresh_access_token_success(monkeypatch, requests_mock):
     """
     Simulate successful token refresh with the MonzoAuthProvider.

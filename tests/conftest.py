@@ -9,6 +9,7 @@ from app.domain.auth_providers import (
     AmericanExpressAuthProvider,
     AuthProviderType,
     BarclaycardAuthProvider,
+    LloydsAuthProvider,
     MonzoAuthProvider,
 )
 from app.domain.settings import Setting
@@ -30,6 +31,11 @@ def monzo_provider():
 @pytest.fixture
 def amex_provider():
     return AmericanExpressAuthProvider()
+
+
+@pytest.fixture
+def lloyds_provider():
+    return LloydsAuthProvider()
 
 
 @pytest.fixture
